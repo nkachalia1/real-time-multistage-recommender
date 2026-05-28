@@ -1,0 +1,39 @@
+### Health
+GET http://localhost:8000/healthz
+
+### Ready
+GET http://localhost:8000/readyz
+
+### Users
+GET http://localhost:8000/api/users
+
+### Catalog
+GET http://localhost:8000/api/catalog?category=ai&limit=5
+
+### Recommendations
+POST http://localhost:8000/api/recommendations
+Content-Type: application/json
+
+{
+  "user_id": "u_alex",
+  "k": 10,
+  "candidate_pool": 60,
+  "context": {
+    "device": "web",
+    "region": "US",
+    "onboarding_topics": "ai,design,automation"
+  },
+  "use_cache": false
+}
+
+### Feedback
+POST http://localhost:8000/api/events
+Content-Type: application/json
+
+{
+  "user_id": "u_alex",
+  "item_id": "vid_001",
+  "event_type": "like",
+  "value": 1.0
+}
+

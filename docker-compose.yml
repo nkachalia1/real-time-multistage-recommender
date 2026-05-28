@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      RECSYS_ENV: local
+      RECSYS_CACHE_TTL_SECONDS: "30"
+      RECSYS_EXPLORATION_RATE: "0.10"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz').read()"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+

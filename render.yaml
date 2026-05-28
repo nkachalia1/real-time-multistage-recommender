@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: real-time-multistage-recommender
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && pip install -e .
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.13
+      - key: RECSYS_ENV
+        value: production
+      - key: RECSYS_CACHE_TTL_SECONDS
+        value: "45"
+      - key: RECSYS_EXPLORATION_RATE
+        value: "0.08"

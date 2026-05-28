@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+.env
+.DS_Store
+
+# Local model and data outputs. The demo service bootstraps deterministic
+# sample artifacts at runtime, so these do not need to be committed.
+data/artifacts/
+data/raw/
+data/processed/
