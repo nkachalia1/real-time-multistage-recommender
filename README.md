@@ -1,6 +1,8 @@
 # Real-Time Multi-Stage Recommendation System
 
-An interview-ready ML systems project that mirrors a TikTok/YouTube-style recommender:
+Link: https://real-time-multistage-recommender.onrender.com/
+
+A machine learning system that mirrors a TikTok/YouTube-style recommender:
 
 - Retrieval: two-tower user/item embeddings narrow the catalog to candidates.
 - Ranking: a multi-objective ranker balances CTR, watch time, and retention.
@@ -9,36 +11,6 @@ An interview-ready ML systems project that mirrors a TikTok/YouTube-style recomm
 - MLOps: offline evaluation, feature backfill, monitoring, and Render deployment config.
 
 The live service is intentionally lightweight so it can deploy cleanly on Render free/starter instances. The optional training path uses PyTorch and FAISS without making the production API depend on heavy ML packages.
-
-## Demo
-
-```bash
-pip install -r requirements.txt
-pip install -e .
-uvicorn app:app --reload
-```
-
-Open:
-
-- Dashboard: http://localhost:8000
-- Swagger docs: http://localhost:8000/docs
-- Health check: http://localhost:8000/healthz
-
-Example recommendation request:
-
-```bash
-curl -X POST http://localhost:8000/api/recommendations \
-  -H "Content-Type: application/json" \
-  -d '{"user_id":"u_alex","k":10,"candidate_pool":60,"context":{"device":"web","region":"US"},"use_cache":false}'
-```
-
-Example real-time feedback event:
-
-```bash
-curl -X POST http://localhost:8000/api/events \
-  -H "Content-Type: application/json" \
-  -d '{"user_id":"u_alex","item_id":"vid_001","event_type":"like","value":1.0}'
-```
 
 ## Architecture
 
@@ -90,16 +62,6 @@ flowchart LR
 - `src/realtime_recs/pipelines/evaluate.py`: offline precision/diversity evaluation.
 - `render.yaml`, `.python-version`, and `Procfile`: Render-ready service config.
 
-## Render Deployment
-
-1. Push this repository to GitHub.
-2. In Render, create a new Web Service from the repo, or use the included `render.yaml` Blueprint.
-3. Build command: `pip install -r requirements.txt`.
-4. Start command: `uvicorn app:app --host 0.0.0.0 --port $PORT`.
-5. Health check path: `/healthz`.
-
-The repo pins Python with `.python-version` and `PYTHON_VERSION=3.12.13` in `render.yaml` so Render does not default to a newer interpreter that may be ahead of ML package wheels.
-
 ## Offline ML Workflow
 
 Install optional training dependencies:
@@ -133,15 +95,6 @@ Train the retrieval model:
 ```bash
 python -m realtime_recs.pipelines.train_two_tower --epochs 8 --output-dir data/artifacts
 ```
-
-## Interview Talking Points
-
-- Latency vs accuracy: retrieval is cheap and broad; ranking is richer but only runs on tens or hundreds of candidates; re-ranking applies business constraints at the end.
-- Training-serving skew: feature construction lives in `FeatureBuilder`, and the same feature names are used in offline evaluation and online serving.
-- Cold start: unknown users get onboarding-topic embeddings; new items can enter retrieval via content embeddings before collaborative signals exist.
-- Feedback loops: exploration and diversity prevent the system from over-optimizing short-term CTR.
-- Scale-up path: swap `InMemoryCatalog` for Postgres, `TTLCache` for Redis, `BruteForceAnnIndex` for FAISS/HNSW/Pinecone, and event writes for Kafka.
-- Monitoring: `/api/metrics` exposes latency, request volume, cache stats, event count, and candidate-stage counts.
 
 ## Tests
 
